@@ -14,7 +14,7 @@ def rand_encrypt(text):
 def find_plaintext():
     size = 256  # approx size of unknown text
     chars = map(chr, range(256))
-    pt = '' 
+    pt = ''
     for i in range(1, size + 1):
         s = 'A'*(size-i)
         ct = rand_encrypt(s)

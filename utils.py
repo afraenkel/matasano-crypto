@@ -38,8 +38,12 @@ def pad(plaintext, blocksize=16):
 
 
 def unpad(plaintext, blocksize=16):
-    pad_length = ord(plaintext[-1])
-    return plaintext[:-pad_length]
+    pad = plaintext[-1]
+    pad_length = ord(pad)
+    if sum([x != pad for x in plaintext[pad_length:]]) > 0:
+        raise TypeError("invalid padding")
+    else:
+        return plaintext[:-pad_length]
 
 
 def num_dupes(L):

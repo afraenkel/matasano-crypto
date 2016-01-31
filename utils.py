@@ -40,7 +40,7 @@ def pad(plaintext, blocksize=16):
 def unpad(plaintext, blocksize=16):
     pad = plaintext[-1]
     pad_length = ord(pad)
-    if sum([x != pad for x in plaintext[pad_length:]]) > 0:
+    if sum([x != pad for x in plaintext[-pad_length:]]) > 0:
         raise TypeError("invalid padding")
     else:
         return plaintext[:-pad_length]

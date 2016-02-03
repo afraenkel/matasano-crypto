@@ -53,6 +53,7 @@ def num_dupes(L):
 # hand-rolled encryption functions
 # ---------------------------------------------------------------------
 
+
 def repeating_key_xor(key, s):
     repkey = key*(len(s)//len(key)) + key[:len(s) % len(key)]
     return xor(repkey, s)

@@ -13,7 +13,6 @@ MDAwMDA3SSdtIG9uIGEgcm9sbCwgaXQncyB0aW1lIHRvIGdvIHNvbG8=
 MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g=
 MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93'''
 CT_LIST = map(lambda x: x.decode('base64'), cts.split('\n'))
-
 KEY = utils.rand_bytes(16)
 
 
@@ -32,29 +31,30 @@ def padding_oracle(ct, iv):
     except TypeError:
         return False
 
-# To Do: implement the attack!
-
 
 def attack():
     enc, iv = enc_rand_ct()
-    block1, block2 = enc[0:16], enc[16:32]
-    # f1 = changed byte block, i2 = intermediate block
-    f1, i2 = bytearray('\x00'*16), bytearray('\x00'*16)
-    
-    # j = number of bytes from end of block
-    # pad = padding byte at that point
-    for j, pad in zip(range(16)[::-1], range(1, 17)):
-        for char in range(0, 256):
-            f1[j] = char
-            if padding_oracle(bytes(f1 + block2), iv):
-                break
-        i2[j] = f1[j] ^ pad
 
-        for k in range(j, 16):
-            f1[k] = i2[k] ^ (pad + 1)
+    pt = ''
+    blocks = [iv] + utils.get_blocks(enc)
+    for block1, block2 in zip(blocks, blocks[1:]):
+        # f1 = changed byte block, i2 = intermediate block
+        f1, i2 = bytearray('\x00'*16), bytearray('\x00'*16)
 
-    p2 = utils.xor(block1, bytes(i2))
-    print(p2)
+        # j = number of bytes from end of block
+        # pad = padding byte at that point
+        for j, pad in zip(range(16)[::-1], range(1, 17)):
+            for char in range(0, 256):
+                f1[j] = char
+                if padding_oracle(bytes(f1 + block2), iv):
+                    break
+            i2[j] = f1[j] ^ pad
+
+            for k in range(j, 16):
+                f1[k] = i2[k] ^ (pad + 1)
+
+        pt += utils.xor(block1, bytes(i2))
+    return utils.unpad(pt)
 
 
 if __name__ == '__main__':

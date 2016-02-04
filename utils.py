@@ -112,7 +112,7 @@ def xor(s1, s2):
 
 
 def test_single_char(s):
-    byteslist = [xor(s, y*len(s)) for y in map(chr, range(128))]
+    byteslist = [xor(s, y*len(s)) for y in map(chr, range(256))]
     outlist = []
     for k, ba in enumerate(byteslist):
         try:
@@ -122,7 +122,7 @@ def test_single_char(s):
             outlist.append((0.0, '', k))
 
     score, word, k = max(outlist)
-    return score, word, chr(k).encode('utf-8')
+    return score, word, chr(k)
 
 
 # ---------------------------------------------------------------------

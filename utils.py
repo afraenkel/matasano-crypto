@@ -86,12 +86,27 @@ def cbc_cryto(text, key, iv, mode='MODE_ENCRYPT'):
         return ''.join(ptext)
 
 
+def ctr_crypto(text, key, nonce):
+    from Crypto.Cipher import AES
+    obj = AES.new(key)
+    keystream = lambda x: obj.encrypt(nonce(x))
+    
+    pt = ''
+    for k in range(len(text)//16 + 1):
+        block = text[16*k:16*(k+1)]
+        pt += xor(keystream(k), block)
+    return pt
+
+
 # ---------------------------------------------------------------------
 # XOR functions
 # ---------------------------------------------------------------------
 
 def xor(s1, s2):
-    '''xor of two byte strings s1 and s2'''
+    '''
+    xor of two byte strings s1 and s2. Truncates to
+    min length of s1 and s2.
+    '''
     z = zip(bytearray(s1), bytearray(s2))
     return ''.join([chr(i ^ j) for (i, j) in z])
 

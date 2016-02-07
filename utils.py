@@ -99,6 +99,44 @@ def ctr_crypto(text, key, nonce):
 
 
 # ---------------------------------------------------------------------
+# RNGs
+# ---------------------------------------------------------------------
+
+
+def mt(seed=4357):
+
+    N, M = 624, 397
+    A, UMASK, LMASK = 0x9908b0df, 0x80000000, 0x7fffffff
+    TMASKB, TMASKC, MASK32 = 0x9d2c5680, 0xefc60000, 0xffffffff
+
+    TSHIFTU = lambda y: (y >> 11)
+    TSHIFTS = lambda y: (y << 7)
+    TSHIFTT = lambda y: (y << 15)
+    TSHIFTL = lambda y: (y >> 18)
+    
+    state = [seed & MASK32]
+    for n in range(1, N):
+        state.append(69069 * state[-1] & MASK32)
+
+    i = -1
+    while True:
+        i = (i + 1) % N
+
+        y = (state[i] & UMASK) | (state[(i+1) % N] & LMASK)
+        state[i] = state[(i+M) % N] ^ (y >> 1)
+        if y & 0x1:
+            state[i] ^= A
+
+        n = state[i]
+        n ^= TSHIFTU(n)
+        n ^= TSHIFTS(n) & TMASKB
+        n ^= TSHIFTT(n) & TMASKC
+        n ^= TSHIFTL(n)
+
+        yield n
+
+
+# ---------------------------------------------------------------------
 # XOR functions
 # ---------------------------------------------------------------------
 

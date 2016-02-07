@@ -16,9 +16,19 @@ def mt_ctr(key):
 
     return closure
 
+
+def recover_key(ciphertext):
+    for x in range(10**6):
+        cipher = mt_ctr(x)
+        pt = cipher(ciphertext)
+        if utils.ascii_score(pt) > 0.85:
+            print "key: %d" % x
+            print "plaintext: %s" % pt
+            break
+
+        
 if __name__ == '__main__':
-    enc_cipher, dec_cipher = mt_ctr(KEY), mt_ctr(KEY)
+    enc_cipher = mt_ctr(KEY)
     string = 'A'*100
     ct = enc_cipher(string)
-    pt = dec_cipher(ct)
-    print pt == string
+    recover_key(ct)
